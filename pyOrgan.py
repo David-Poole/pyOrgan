@@ -18,6 +18,42 @@ from PIL import Image, ImageTk
 # User Interface
 # ############################################################################################################
 # ************************************************************************************************************
+# Main Window
+# ************************************************************************************************************
+class MainWindow(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        # set full screen
+        w, h = self.winfo_screenwidth(), self.winfo_screenheight()
+        self.geometry(f'{w}x{h}+0+0')
+        # main menu
+        self.menu = tk.Menu(master=self)
+        # settings menu
+        self.settings_show = tk.BooleanVar()
+        self.menu.add_checkbutton(
+            label='Settings',
+            variable=self.settings_show,
+            command=self.keyboard_settings,
+            hidemargin=True
+        )
+        ## add menu to main window
+        self.configure(menu=self.menu)
+        # settings toggle
+        # gui forms
+        self.keyboardsettings = KeyboardSettingsForm(master=self)
+    
+    def keyboard_settings(self):
+        #print(self.settings_show.get())
+        if self.settings_show.get():
+            self.keyboardsettings.grid(
+                column=0,
+                row=0
+            )
+        elif not self.settings_show.get():
+            self.keyboardsettings.grid_forget()
+
+
+# ************************************************************************************************************
 # Keyboards
 # ************************************************************************************************************
 # Key Class
@@ -313,6 +349,10 @@ class Piston(tk.Frame):
         else:
             self.state_off()
 
+
+# ************************************************************************************************************
+# Organ Console
+# ************************************************************************************************************
 
 # ************************************************************************************************************
 # User Forms
@@ -759,13 +799,5 @@ class KeyboardSettingsForm(ttk.Frame):
 # Run Module:
 # ____________________________________________________________________________________________________________
 if __name__ == '__main__':
-    root = tk.Tk()
-    form = KeyboardSettingsForm(master=root)
-    form.pack(anchor='nw')
-    # manual = Manual(master=root, theme='default')
-    # manual.pack()
-    # pedalboard = Pedalboard(master=root, theme='default')
-    # pedalboard.pack()
-    # piston = Piston(master=root, theme='default', diameter=20, text='FU')
-    # piston.pack()
-    root.mainloop()
+    mainwindow = MainWindow()
+    mainwindow.mainloop()

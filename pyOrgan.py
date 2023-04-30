@@ -757,10 +757,10 @@ class KeyboardSettingsForm(ttk.Frame):
         self.parser.read(filenames=self.configfile)
         keyboard = self.keyboard.get()
         self.division.set(self.parser[keyboard]['organ_division'])
-        self.includepresets.set(bool(self.parser[keyboard]['include_pistons']))
-        self.includegenerals.set(bool(self.parser[keyboard]['include_generals']))
+        self.includepresets.set(self.parser[keyboard]['include_pistons'])
+        self.includegenerals.set(self.parser[keyboard]['include_generals'])
         self.numbergenerals.set(self.parser[keyboard]['number_generals'])
-        self.includedivisionals.set(bool(self.parser[keyboard]['include_divisionals']))
+        self.includedivisionals.set(self.parser[keyboard]['include_divisionals'])
         self.numberdivisionals.set(self.parser[keyboard]['number_divisionals'])
 
     def configfile_organ_update(self, event=None):
@@ -778,12 +778,12 @@ class KeyboardSettingsForm(ttk.Frame):
     def configfile_keyboard_update(self, event=None):
         self.parser.read(filenames=self.configfile)
         keyboard = self.keyboard.get()
-        self.parser[keyboard]['organ_division'] = self.division.get()
+        self.parser[keyboard]['organ_division'] = str(self.division.get())
         self.parser[keyboard]['include_pistons'] = str(self.includepresets.get())
         self.parser[keyboard]['include_generals'] = str(self.includegenerals.get())
-        self.parser[keyboard]['number_generals'] = self.numbergenerals.get()
+        self.parser[keyboard]['number_generals'] = str(self.numbergenerals.get())
         self.parser[keyboard]['include_divisionals'] = str(self.includedivisionals.get())
-        self.parser[keyboard]['number_divisionals'] = self.numberdivisionals.get()
+        self.parser[keyboard]['number_divisionals'] = str(self.numberdivisionals.get())
         self.configfile_write()
 
     def configfile_write(self):

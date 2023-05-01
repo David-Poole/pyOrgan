@@ -28,15 +28,21 @@ class MainWindow(tk.Tk):
         self.geometry(f'{w}x{h}+0+0')
         # main menu
         self.menu = tk.Menu(master=self)
-        # settings menu
-        self.settings_show = tk.BooleanVar()
-        self.menu.add_checkbutton(
-            label='Settings',
-            variable=self.settings_show,
-            command=self.keyboard_settings,
-            hidemargin=True
+        # view menu
+        self.view_menu = tk.Menu(
+            master=self.menu,
+            tearoff=False
         )
-        ## add menu to main window
+        # left side options form
+        self.keyboardsettings_show = tk.BooleanVar()
+        self.view_menu.add_checkbutton(
+            label='Keyboard Settings',
+            variable=self.keyboardsettings_show,
+            command=self.keyboard_settings,
+        )
+        # add menus to main menu
+        self.menu.add_cascade(label='view', menu=self.view_menu)
+        # add menu to main window
         self.configure(menu=self.menu)
         # settings toggle
         # gui forms
@@ -44,12 +50,12 @@ class MainWindow(tk.Tk):
     
     def keyboard_settings(self):
         #print(self.settings_show.get())
-        if self.settings_show.get():
+        if self.keyboardsettings_show.get():
             self.keyboardsettings.grid(
                 column=0,
                 row=0
             )
-        elif not self.settings_show.get():
+        elif not self.keyboardsettings_show.get():
             self.keyboardsettings.grid_forget()
 
 
@@ -357,6 +363,11 @@ class Piston(tk.Frame):
 # ************************************************************************************************************
 # User Forms
 # ************************************************************************************************************
+# Side Settings Menu
+class SettingsMenu(ttk.Notebook):
+    def __init__(self, master):
+        super().__init__(master)
+
 # Keyboard Settings
 class KeyboardSettingsForm(ttk.Frame):
     labelwidth = 20

@@ -23,6 +23,8 @@ from PIL import Image, ImageTk
 class MainWindow(tk.Tk):
     def __init__(self):
         super().__init__()
+        # set title
+        self.title("pyOrgan")
         # set full screen
         w, h = self.winfo_screenwidth(), self.winfo_screenheight()
         self.geometry(f'{w}x{h}+0+0')
@@ -34,11 +36,11 @@ class MainWindow(tk.Tk):
             tearoff=False
         )
         # left side options form
-        self.keyboardsettings_show = tk.BooleanVar()
+        self.settings_show = tk.BooleanVar()
         self.view_menu.add_checkbutton(
             label='Keyboard Settings',
-            variable=self.keyboardsettings_show,
-            command=self.keyboard_settings,
+            variable=self.settings_show,
+            command=self.settings_toggle,
         )
         # add menus to main menu
         self.menu.add_cascade(label='view', menu=self.view_menu)
@@ -46,17 +48,17 @@ class MainWindow(tk.Tk):
         self.configure(menu=self.menu)
         # settings toggle
         # gui forms
-        self.keyboardsettings = KeyboardSettingsForm(master=self)
+        self.settings = SettingsMenu(master=self)
     
-    def keyboard_settings(self):
+    def settings_toggle(self):
         #print(self.settings_show.get())
-        if self.keyboardsettings_show.get():
-            self.keyboardsettings.grid(
+        if self.settings_show.get():
+            self.settings.grid(
                 column=0,
                 row=0
             )
-        elif not self.keyboardsettings_show.get():
-            self.keyboardsettings.grid_forget()
+        elif not self.settings_show.get():
+            self.settings.grid_forget()
 
 
 # ************************************************************************************************************
@@ -367,6 +369,8 @@ class Piston(tk.Frame):
 class SettingsMenu(ttk.Notebook):
     def __init__(self, master):
         super().__init__(master)
+        self.keyboardsettingsform = KeyboardSettingsForm(self)
+        self.add(self.keyboardsettingsform, text='Keyboard Settings')
 
 # Keyboard Settings
 class KeyboardSettingsForm(ttk.Frame):
@@ -380,7 +384,7 @@ class KeyboardSettingsForm(ttk.Frame):
         self.generalkeyboardsettings = ttk.LabelFrame(
             master=self,
             text="General Keyboard Settings",
-            labelanchor='n',
+            labelanchor='nw',
         )
         # Manual Settings ....................................................................................
         self.manualsettings = ttk.LabelFrame(
@@ -449,20 +453,20 @@ class KeyboardSettingsForm(ttk.Frame):
             justify='center'
         )
         # Pedalboard Settings ................................................................................
-        self.pedalboardsettings = ttk.LabelFrame(
+        self.generalpedalboardsettings = ttk.LabelFrame(
             master=self.generalkeyboardsettings,
-            text="Pedalboard Settings",
+            text="General Pedalboard Settings",
             labelanchor='nw'
         )
         # include pedalboard
         self.includepedalboard = tk.BooleanVar()
         self.includepedalboard_label = ttk.Label(
-            master=self.pedalboardsettings,
+            master=self.generalpedalboardsettings,
             text="Include Pedalboard:",
             width=self.labelwidth
         )
         self.includepedalboard_check = ttk.Checkbutton(
-            master=self.pedalboardsettings,
+            master=self.generalpedalboardsettings,
             variable=self.includepedalboard,
             command=self.numbermanuals_update
         )
@@ -470,12 +474,12 @@ class KeyboardSettingsForm(ttk.Frame):
         pedalboardthemes = os.listdir('images/pedalboard/')
         self.pedalboardtheme = tk.StringVar()
         self.pedalboardtheme_label = ttk.Label(
-            master=self.pedalboardsettings,
+            master=self.generalpedalboardsettings,
             text="Pedalboard Theme:",
             width=self.labelwidth
         )
         self.pedalboardtheme_combo = ttk.Combobox(
-            master=self.pedalboardsettings,
+            master=self.generalpedalboardsettings,
             textvariable=self.pedalboardtheme,
             values=pedalboardthemes,
             justify='center'
@@ -483,12 +487,12 @@ class KeyboardSettingsForm(ttk.Frame):
         # toepiston diameter
         self.toepistondiameter = tk.StringVar()
         self.toepistondiameter_label = ttk.Label(
-            master=self.pedalboardsettings,
+            master=self.generalpedalboardsettings,
             text="Toe Piston Diameter",
             width=self.labelwidth
         )
         self.toepistondiameter_spin = ttk.Spinbox(
-            master=self.pedalboardsettings,
+            master=self.generalpedalboardsettings,
             textvariable=self.toepistondiameter,
             from_=10,
             to=50,
@@ -499,12 +503,12 @@ class KeyboardSettingsForm(ttk.Frame):
         # toepiston theme
         self.toepistontheme = tk.StringVar()
         self.toepistontheme_label = ttk.Label(
-            master=self.pedalboardsettings,
+            master=self.generalpedalboardsettings,
             text="Toe Piston Theme:",
             width=self.labelwidth
         )
         self.toepistontheme_combo = ttk.Combobox(
-            master=self.pedalboardsettings,
+            master=self.generalpedalboardsettings,
             textvariable=self.toepistontheme,
             values=pistonthemes,
             justify='center'
@@ -547,12 +551,14 @@ class KeyboardSettingsForm(ttk.Frame):
                     pady=2,
                     sticky='w'
                 )
-        frames = (self.manualsettings, self.pedalboardsettings)
+        frames = (self.manualsettings, self.generalpedalboardsettings)
         for frame in frames:
             frame.pack(
                 anchor='nw',
                 padx=5,
-                pady=(0, 5)
+                pady=(0, 5),
+                fill='both',
+                expand=True
             )
         # Keyboard Settings ..................................................................................
         self.keyboardsettings = ttk.LabelFrame(
@@ -560,6 +566,8 @@ class KeyboardSettingsForm(ttk.Frame):
             text="Keyboard Settings",
             labelanchor='nw',
         )
+        self.keyboardsettings.rowconfigure(tuple(range(4)), weight=1)
+        self.keyboardsettings.columnconfigure(tuple(range(2)), weight=1)
         # keyboard
         self.keyboard = tk.StringVar()
         self.keyboard_label = ttk.Label(
@@ -605,7 +613,7 @@ class KeyboardSettingsForm(ttk.Frame):
         self.keyboardpresets = ttk.LabelFrame(
             master=self.keyboardsettings,
             text='Keyboard Presets',
-            labelanchor='nw'
+            labelanchor='nw',
         )
         # include generals
         self.includegenerals = tk.BooleanVar()
@@ -687,7 +695,7 @@ class KeyboardSettingsForm(ttk.Frame):
                     row=i,
                     padx=10,
                     pady=(5 ,2),
-                    sticky='w'
+                    sticky='news'
                 )
         keyboardpreset_widgets = (
             (self.includegenerals_label, self.includegenerals_check),
@@ -711,7 +719,9 @@ class KeyboardSettingsForm(ttk.Frame):
                 padx=2,
                 pady=(0, 10),
                 ipadx=5,
-                ipady=5
+                ipady=5,
+                fill='both',
+                expand=True
             )
         # Configure Form Data
         self.populate_form()
